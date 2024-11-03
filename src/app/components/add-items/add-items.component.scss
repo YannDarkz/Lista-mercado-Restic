@@ -1,0 +1,120 @@
+.form-container {
+    max-width: 400px;
+    margin: 0 auto 2vh auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+
+  }
+
+  h4 {
+    font-size: 8px;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgb(228, 217, 217), 0 0 1em rgb(215, 215, 224), 0 0 0.2em rgb(35, 35, 37);
+    margin-bottom: 2vh;
+
+    @media(min-width: 400px) {
+      font-size: 13px;
+    }
+
+    @media(min-width: 500px) {
+      font-size: 16px;
+    }
+    
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input, select {
+    border: none;
+    border-bottom: 2px solid #3498db; /* Linha cinza inicial */
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 5px;
+    transition: border-color 0.3s ease-in-out;
+  }
+  
+  input:focus, select:focus {
+    border-bottom: 2px solid #329e3b; 
+  }
+  
+  input::placeholder {
+    color: #aaa;
+    font-style: italic;
+  }
+
+  input.invalid, select.invalid {
+    border-bottom: 2px solid #d81919; 
+  }
+
+  input[placeholder] {
+    font-size: 12px;
+  }
+
+
+  .input.qtd {
+    width: 20%;
+    
+  }
+
+  small {
+    font-size: 10px;
+    color: rgb(187, 23, 23);
+  }
+
+  strong {
+    color: rgb(45, 45, 196);
+    font-size: 11px;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+
+  button:hover {
+    background-color: #1a8d33;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .box-btn-Edit{
+
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    
+  
+    button.cancel {
+      background-color: #dc3545;
+
+      &:hover {
+        background-color: #962a34;
+      }
+    }
+  }

@@ -1,0 +1,22 @@
+{
+  "cold": [],
+  "perishables": [],
+  "cleaning": [],
+  "others": [],
+  "cold-Buy": [],
+  "perishables-Buy": [],
+  "cleaning-Buy": [],
+  "others-Buy": [],
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "email": "alice@exemplo.com"
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "email": "bob@exemplo.com"
+    }
+  ]
+}

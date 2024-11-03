@@ -1,0 +1,15 @@
+<div class="purchased-list">
+    <h4>Carrinho de Itens 🛒</h4>
+    <h6><strong>💸 Total:</strong> {{buyPrice | currency:'BRL'}}</h6>
+  
+    <ul *ngIf="purchasedItems.length > 0; else noPurchasedItems">
+      <li *ngFor="let item of purchasedItems; let i = index">
+        <app-card-buy-item [name]="item.name" [price]="item.price" (remove)="removeFromPurchasedItems(i)"></app-card-buy-item>
+      </li>
+    </ul>
+  
+    <ng-template #noPurchasedItems>
+      <p class="text-default">Nenhum item foi adicionado ainda 🛒.</p>
+    </ng-template>
+  </div>
+  

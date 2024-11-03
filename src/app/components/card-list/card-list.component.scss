@@ -1,0 +1,75 @@
+.card {
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+}
+
+
+h3 {
+    padding-bottom: 1vh;
+    margin: 0 0 1vh 0;
+    font-size: 15px;
+    border-bottom: 1px solid #333;
+    text-align: center;
+}
+
+p {
+    margin: 5px 0 2vh 0;
+    color: #333;
+    font-size: 13px;
+}
+
+button {
+    padding: 5px 7px;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-left: 2vw;
+}
+
+button:hover{
+    background-color: #176428;
+}
+
+button.buy {
+    position: absolute;
+    top: -15px;
+    right: 0px;
+
+    .img-svg {
+        width:  15px;
+    }
+}
+
+button.edit {
+    background-color: #bbb93f;
+}
+
+button.edit:hover {
+    background-color: #8e972b;
+}
+
+button.delete {
+    background-color: #f84747;
+    
+
+    .trash-img {
+        width: 10px;
+        margin: 0 0 0 1vw;
+    }
+    
+}
+
+button.delete:hover {
+    background-color: #a72828;
+}
+

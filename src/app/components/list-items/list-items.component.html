@@ -1,0 +1,26 @@
+<app-add-items (notifyAddItem)="onNotifyAddItem()" (notifyEditItem)="onNotifyUpdatedItem()"></app-add-items>
+<div class="list-container">
+    <h4>lista de compras 📋</h4>
+    <h6><strong>💸 Total:</strong> {{totalPrice | currency:'BRL'}}</h6>
+
+    <div *ngFor="let categoryObj of categoriesWithItems">
+      <h5>{{ categoriaPT(categoryObj.category) | uppercase }}</h5>
+      <ul *ngIf="categoryObj.products.length > 0; else noItems">
+        <li *ngFor="let item of categoryObj.products; let i = index">
+          <app-card-list
+            [name]="item.name"
+            [price]="item.price"
+            [quantity]="item.quantity"
+            (edit)="editItem(item, i, categoryObj.category)"
+            (delete)="deleteItem(categoryObj.category, item.id)"
+            (buy)="buyItem(item, categoryObj.category, i)"
+          ></app-card-list>
+        </li>
+      </ul>
+    </div>
+
+    <ng-template #noItems>
+        <p>A lista de compras está vazia. Adicione algum item 🍇</p>
+    </ng-template>
+
+<app-buy-item (removeItemBuy)="removeItemBuy()" (itemRemoved)="loadItems()"></app-buy-item>
