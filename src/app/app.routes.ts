@@ -1,3 +1,20 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { canActivateGuard } from './guards/auth/can-activate.guard';
+import { ListItemsComponent } from './components/list-items/list-items.component';
+import { HomeComponent } from './components/home/home.component';
+
+export const routes: Routes = [
+    {
+        path: 'listItems',
+        component: ListItemsComponent,
+        canActivate: [canActivateGuard],
+        
+    },
+    {
+        path: '',
+        component: HomeComponent,
+
+    }
+
+];
