@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Iproduct } from '../../interfaces/item-list';
 
 import { ShoppingListService } from '../../services/shopping-list/shopping-list.service';
+import { UserDataService } from '../../services/user-data/user-data.service';
+import { map, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-add-items',
@@ -19,14 +21,7 @@ export class AddItemsComponent {
   @Output() notifyAddItem = new EventEmitter<void>()
   @Output() notifyEditItem = new EventEmitter<void>()
   
-  constructor(private formBuilder: FormBuilder, private productService: ShoppingListService) { }
-
-  // itemsByCategory = {
-  //   cold: [] as Iproduct[],
-  //   perishables: [] as Iproduct[],
-  //   cleaning: [] as Iproduct[],
-  //   others: [] as Iproduct[]
-  // };
+  constructor(private formBuilder: FormBuilder, private productService: ShoppingListService, private userDataService: UserDataService) { }
 
   currentItemCategory: string | null = null;
   currentItemId: string | null = null
@@ -41,11 +36,24 @@ export class AddItemsComponent {
   editing: boolean = false
 
 
-  addItem(): void {
-    if (this.addItemForm.valid) {
-      const newItem = this.addItemForm.value as Iproduct;
+  async addItem(): Promise<void> {
+    try {
+      const userId = await firstValueFrom(this.userDataService.getUserId());
+      const numericUserId = userId ? userId.split('|')[1]: '';
+
+      if(!userId) {
+        throw new Error('User id is Undefined')
+      }
+
+      const newItem: Iproduct = {
+        ...this.addItemForm.value as Iproduct,
+       userId: numericUserId, 
+      };
+      console.log("neww item",newItem);
+      
       const newCategory = newItem.category?.toLowerCase();
-  
+
+
       if (this.editing && this.currentItemId !== null) {
         if (newCategory !== this.currentItemCategory) {
           
@@ -69,12 +77,14 @@ export class AddItemsComponent {
         });
       }
   
-      // Resetando o formulário e variáveis de controle
       this.addItemForm.reset();
       this.editing = false;
       this.currentItemId = null;
       this.currentItemCategory = null;
+    } catch (error) {
+      console.error('Erro ao obter o id do usuário',error);
     }
+
   }
 
   startEdit(item: Iproduct, category: string): void {
