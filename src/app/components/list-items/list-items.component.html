@@ -1,4 +1,14 @@
-<app-add-items (notifyAddItem)="onNotifyAddItem()" (notifyEditItem)="onNotifyUpdatedItem()"></app-add-items>
+<div class="notification-card" [ngClass]="{'show': addTextNotify, 'none': !addTextNotify}">
+  <h3 class="text-notify">Notification</h3>
+</div>
+
+<div *ngIf="userData">
+  <img src={{userData.picture}} alt="foto-perfil">
+  <h5>{{userData.name}}</h5>
+  <p>{{userData.email}}</p>
+</div>
+<app-auth-buttons></app-auth-buttons>
+<app-add-items (notifyAddItem)="notifyAddItem()" (notifyEditItem)="notifyEditItem()"></app-add-items>
 <div class="list-container">
     <h4>lista de compras 📋</h4>
     <h6><strong>💸 Total:</strong> {{totalPrice | currency:'BRL'}}</h6>
@@ -23,4 +33,4 @@
         <p>A lista de compras está vazia. Adicione algum item 🍇</p>
     </ng-template>
 
-<app-buy-item (removeItemBuy)="removeItemBuy()" (itemRemoved)="loadItems()"></app-buy-item>
+<app-buy-item (removeItemBuy)="notifyRemoveItem()" (itemRemoved)="loadItems()"></app-buy-item>

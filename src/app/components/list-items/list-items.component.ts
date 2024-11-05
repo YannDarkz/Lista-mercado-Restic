@@ -1,26 +1,36 @@
-import { Component, EventEmitter, OnInit, Input, ViewChild, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardListComponent } from '../card-list/card-list.component';
 import { AddItemsComponent } from '../add-items/add-items.component';
 import { BuyItemComponent } from '../buy-item/buy-item.component';
+import { AuthButtonsComponent } from '../auth-buttons/auth-buttons.component';
 
 import { Iproduct } from '../../interfaces/item-list';
-import { ShoppingListService } from '../../services/shopping-list/shopping-list.service';
-import { HttpClient } from '@angular/common/http';
+import { Iuser } from '../../interfaces/user';
 
+import { UserDataService } from '../../services/user-data/user-data.service';
+import { ShoppingListService } from '../../services/shopping-list/shopping-list.service';
+import { ItemUpdateService } from '../../services/itemUpdate/item-update.service';
+
+
+import { Subscription } from 'rxjs';
 import { forkJoin } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 
 @Component({
   selector: 'app-list-items',
   standalone: true,
-  imports: [CommonModule, CardListComponent, AddItemsComponent, BuyItemComponent],
+  imports: [CommonModule, CardListComponent, AddItemsComponent, BuyItemComponent, AuthButtonsComponent],
   templateUrl: './list-items.component.html',
   styleUrl: './list-items.component.scss'
 })
-export class ListItemsComponent implements OnInit {
+export class ListItemsComponent implements OnInit, OnDestroy {
 
-  constructor(private http: ShoppingListService) {}
+  userData: Iuser | null = null
+  private updateSubscription!: Subscription;
+
+  constructor(private http: ShoppingListService, private itemUpdateService: ItemUpdateService, private userDataService: UserDataService) {}
 
 
   categories = ['cold', 'perishables', 'cleaning', 'others'];
@@ -40,17 +50,7 @@ export class ListItemsComponent implements OnInit {
 
   };
 
-
   totalPrice: number = 0
-
-  // @Input() loadBuyItems = new EventEmitter<void>()
-  @Output() notifyAddItem = new EventEmitter<void>()
-  @Output() notifyUpdatedItem = new EventEmitter<void>()
-  @Output() notifyRemoveItem = new EventEmitter<void>()
-  @Output() notifyByuItem = new EventEmitter<void>()
-
-
-
 
   @ViewChild(AddItemsComponent) addItemsComponent!: AddItemsComponent;
   @ViewChild(BuyItemComponent) buyItemComponent!: BuyItemComponent;
@@ -58,9 +58,23 @@ export class ListItemsComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.loadItems()
-    // this.clearListBuy()
-    // this.clearList()
+    this.loadItems();
+    
+   this.updateSubscription = this.itemUpdateService.updateItems$.subscribe(() => {
+    this.loadItems();
+   });
+
+   this.userDataService.getUserData().subscribe(data => {
+    this.userData = data;
+    console.log("listData", this.userData);
+    
+   })
+  }
+
+  ngOnDestroy(): void {
+      if(this.updateSubscription) {
+        this.updateSubscription.unsubscribe();
+      }
   }
 
   ngAfterViewInit(): void {
@@ -70,23 +84,37 @@ export class ListItemsComponent implements OnInit {
   }
 
   loadItems(): void {
-    this.categoriesWithItems.forEach((categoryObj) => {
-      this.http.getItemsByCategory(categoryObj.category).subscribe((data) => {
-        categoryObj.products = data;
-      });
+    const loadObservables = this.categoriesWithItems.map(categoryObj => 
+      this.http.getItemsByCategory(categoryObj.category).pipe(
+        tap(data => categoryObj.products = data)
+      )
+    );
+    forkJoin(loadObservables).subscribe({
+      next: () => {
+        this.calculateTotalPrice(); 
+      },
+      error: (err) => console.error("Erro ao carregar itens:", err)
     });
-
-    console.log("euu",  this.categoriesWithItems);
-
    
   }
 
   calculateTotalPrice(): void {
-    this.totalPrice = Object.values(this.itemsByCategory)
-      .flat()
-      .reduce((acc, item) => acc + item.price * item.quantity, 0)
-
+    this.totalPrice = this.categoriesWithItems
+      .reduce((acc, categoryObj) => {
+        const categoryTotal = (categoryObj.products || []).reduce((sum, item) => {
+          const price = item.price || 0;
+          const quantity = item.quantity || 0;
+          return sum + price * quantity;
+        }, 0);
+        return acc + categoryTotal;
+      }, 0);
   }
+
+  total() {
+    console.log("re", this.calculateTotalPrice() );
+    
+  }
+  
 
   editItem(item: Iproduct, id: number, category: string): void {
   
@@ -103,24 +131,38 @@ export class ListItemsComponent implements OnInit {
     this.http.deleteItem(category, itemId).subscribe({
       next: () => {
         this.loadItems();
-        this.notifyRemoveItem.emit();
+        this.notifyRemoveItem()
       },
       error: (err) => console.error("Erro ao deletar item:", err)
     });
   }
 
   buyItem(item: Iproduct, category: string, index: number): void {
-    const typedCategory = category as keyof typeof this.itemsByCategory;
-    const purchasedItems = JSON.parse(localStorage.getItem('listaComprados') || '[]');
-    purchasedItems.push(item);
-    localStorage.setItem('listaComprados', JSON.stringify(purchasedItems));
-
-    this.itemsByCategory[typedCategory].splice(index, 1);
-    this.saveItems();
-    this.loadItems();
-
-    this.buyItemComponent.loadPurchasedItems();
-    this.notifyByuItem.emit();
+    const buyCategory = `${category}-Buy`;
+    
+   
+    this.http.addItem(buyCategory, item).subscribe({
+      next: () => {
+        const categoryObj = this.categoriesWithItems.find(cat => cat.category === category);
+        if (categoryObj) {
+          categoryObj.products.splice(index, 1);
+        }
+        
+        
+        this.http.deleteItem(category, item.id).subscribe({
+          next: () => {
+            this.saveItems(); 
+            this.loadItems();  
+  
+            // Carregar novamente os itens comprados e emitir o evento
+            this.buyItemComponent.loadPurchasedItems();
+            this.notifyAddBuyItem();
+          },
+          error: (err) => console.error("Erro ao deletar item da categoria original:", err)
+        });
+      },
+      error: (err) => console.error("Erro ao adicionar item na categoria comprados:", err)
+    });
   }
 
   saveItems(): void {
@@ -145,7 +187,6 @@ export class ListItemsComponent implements OnInit {
 
   clearList(): void {
     localStorage.removeItem('listaCompras');
-    // this.items = [];
   }
 
   get objectKeys() {
@@ -154,21 +195,6 @@ export class ListItemsComponent implements OnInit {
 
   getItemsByCategory(category: keyof typeof this.itemsByCategory): Iproduct[] {
     return this.itemsByCategory[category] || [];
-  }
-
-
-
-  onNotifyAddItem(): void {
-    this.notifyAddItem.emit()
-
-  }
-
-  onNotifyUpdatedItem(): void {
-    this.notifyUpdatedItem.emit()
-  }
-
-  removeItemBuy(): void {
-    this.notifyRemoveItem.emit()
   }
 
 
@@ -195,5 +221,38 @@ export class ListItemsComponent implements OnInit {
 
     requestAnimationFrame(animateScroll);
   }
+
+  addTextNotify = '';
+  
+  notifyAddItem(): void {
+    this.addTextNotify = 'adcionado com sucesso! ✅'
+    setTimeout(() => {
+      this.addTextNotify = ''
+    },2000)
+  }
+
+  notifyEditItem(): void {
+    this.addTextNotify = 'Editado com sucesso! ✅'
+    setTimeout(() => {
+      this.addTextNotify = ''
+    },2000)
+  }
+
+  notifyRemoveItem(): void {
+    this.addTextNotify = 'Removido com sucesso! ✅'
+    setTimeout(() => {
+      this.addTextNotify = ''
+    },1000)
+  }
+
+  notifyAddBuyItem(): void {
+    this.addTextNotify = 'adcionado No carrinho! ✅'
+    setTimeout(() => {
+      this.addTextNotify = ''
+    },1500)
+  }
+
+
+
 
 }
