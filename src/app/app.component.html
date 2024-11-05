@@ -1,6 +1,9 @@
 <div class="notification-card" [ngClass]="{'show': addTextNotify, 'none': !addTextNotify}">
-  <h3>{{ addTextNotify }}</h3>
+  <h3>Notification</h3>
+
 </div>
 
-<app-list-items (notifyByuItem)="notifyAddBuyItem()" (notifyAddItem)="notifyAddItem()"
-  (notifyUpdatedItem)="notifyEditItem()" (notifyRemoveItem)="notifyRemoveItem()"></app-list-items>
+
+
+
+<router-outlet></router-outlet>
