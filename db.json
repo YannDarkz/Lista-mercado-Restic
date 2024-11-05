@@ -1,31 +1,24 @@
 {
-  "cold": [],
-  "perishables": [
+  "cold": [
     {
-      "id": "6352",
-      "name": "sdds",
+      "id": "8c77",
+      "name": "café",
       "price": 1,
       "quantity": 1,
-      "category": "perishables"
+      "category": "cold",
+      "userId": "107959240786162842006"
     }
   ],
+  "perishables": [],
   "cleaning": [],
-  "others": [
-    {
-      "id": "5f23",
-      "name": "oleo",
-      "price": 2,
-      "quantity": 4,
-      "category": "others"
-    }
-  ],
+  "others": [],
   "cold-Buy": [],
   "perishables-Buy": [],
   "cleaning-Buy": [],
   "others-Buy": [],
   "users": [
     {
-      "id": "6c3d",
+      "id": "107959240786162842006",
       "name": "Ian Santos",
       "email": "iansantosmcqueen@gmail.com",
       "picture": "https://lh3.googleusercontent.com/a/ACg8ocISjz7jfgCCx95GoSYT3whq2s9cf3C05ZwuqFzNv_QDjES5CJJBMw=s96-c"
