@@ -1,13 +1,15 @@
+<app-auth-buttons></app-auth-buttons>
 <div class="notification-card" [ngClass]="{'show': addTextNotify, 'none': !addTextNotify}">
   <h3 class="text-notify">Notification</h3>
 </div>
 
-<div *ngIf="userData">
+<div class="user-profile" *ngIf="userData">
   <img src={{userData.picture}} alt="foto-perfil">
-  <h5>{{userData.name}}</h5>
-  <p>{{userData.email}}</p>
+  <h4>User: <strong>{{userData.name}}</strong></h4>
+  <p>Email:{{userData.email}}</p>
+
 </div>
-<app-auth-buttons></app-auth-buttons>
+
 <app-add-items (notifyAddItem)="notifyAddItem()" (notifyEditItem)="notifyEditItem()"></app-add-items>
 <div class="list-container">
     <h4>lista de compras 📋</h4>

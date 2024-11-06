@@ -28,6 +28,7 @@ import { tap } from 'rxjs/operators';
 export class ListItemsComponent implements OnInit, OnDestroy {
 
   userData: Iuser | null = null
+  userId: string | undefined = undefined
   private updateSubscription!: Subscription;
 
   constructor(private http: ShoppingListService, private itemUpdateService: ItemUpdateService, private userDataService: UserDataService) {}
@@ -58,7 +59,6 @@ export class ListItemsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.loadItems();
     
    this.updateSubscription = this.itemUpdateService.updateItems$.subscribe(() => {
     this.loadItems();
@@ -66,9 +66,15 @@ export class ListItemsComponent implements OnInit, OnDestroy {
 
    this.userDataService.getUserData().subscribe(data => {
     this.userData = data;
-    console.log("listData", this.userData);
-    
-   })
+    this.userId = data?.userId
+
+    if (this.userId) {
+      setTimeout(() => {
+        this.loadItems();
+      }, 100);
+      
+    }
+   });
   }
 
   ngOnDestroy(): void {
@@ -83,9 +89,10 @@ export class ListItemsComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadItems(): void {
+  loadItems(): void {    
     const loadObservables = this.categoriesWithItems.map(categoryObj => 
-      this.http.getItemsByCategory(categoryObj.category).pipe(
+      this.http.getItemsByCategory(categoryObj.category, this.userId!).pipe(
+        
         tap(data => categoryObj.products = data)
       )
     );

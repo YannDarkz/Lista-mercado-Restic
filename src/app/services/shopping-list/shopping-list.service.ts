@@ -12,8 +12,8 @@ export class ShoppingListService {
 
   constructor(private http: HttpClient) { }
 
-  getItemsByCategory(category: string): Observable<Iproduct[]> {
-    return this.http.get<Iproduct[]>(`${this.apiUrl}/${category}`);
+  getItemsByCategory(category: string, userId: string): Observable<Iproduct[]> {
+    return this.http.get<Iproduct[]>(`${this.apiUrl}/${category}?userId=${userId}`);    
   }
 
   addItem(category: string, item: Iproduct): Observable<Iproduct> {

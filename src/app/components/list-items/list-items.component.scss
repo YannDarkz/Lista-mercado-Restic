@@ -48,6 +48,19 @@
 
 }
 
+.user-profile {
+  // border: 1px solid red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5vh;
+
+  img {
+    border-radius: 50%;
+    margin-bottom: 2vh;
+  }
+}
+
 
 .list-container {
     max-width: 400px;
