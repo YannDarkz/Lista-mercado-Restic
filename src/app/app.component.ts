@@ -24,16 +24,16 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/listItems']);
 
         this.auth.user$.subscribe(user => {
-          console.log("uzi", user);
-          
+          // console.log("uzer", user)
+  
           if (user) {
             const userData = {
-              id: user.sub ? user.sub.split('|')[1] : '',
+              userId: user.sub ? user.sub.split('|')[1] : '',
               name: user.name || 'Usuário sem nome',
               email: user.email || '',
               picture: user.picture || ''
             };
-            console.log("datap", userData);
+            
             
 
             this.userService.saveAutorizedUser(userData).subscribe(savedUser => {
