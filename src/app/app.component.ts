@@ -18,6 +18,11 @@ export class AppComponent implements OnInit {
 
   constructor(public auth: AuthService, private router: Router, private userService: UserService, private userDataService: UserDataService) { }
 
+
+  showError(message: string) {
+    alert(message); 
+  }
+
   ngOnInit() {
     this.auth.isAuthenticated$.subscribe((isAuthenticated) => {
       if (isAuthenticated) {
@@ -33,11 +38,12 @@ export class AppComponent implements OnInit {
               email: user.email || '',
               picture: user.picture || ''
             };
-            
-            
-
-            this.userService.saveAutorizedUser(userData).subscribe(savedUser => {
-              this.userDataService.setUserData(savedUser);
+            this.userService.saveAutorizedUser(userData).subscribe({
+              next: (savedUser) => {
+                if (savedUser) {
+                  this.userDataService.setUserData(savedUser);
+                }
+              }
             });
           }
         })

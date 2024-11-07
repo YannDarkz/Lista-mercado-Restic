@@ -1,4 +1,8 @@
 
+.notification-card.error{
+  background-color: #f44336;
+  color: white;
+}
 .notification-card {
   transition: opacity 0.3s ease-in;
   opacity: 0;

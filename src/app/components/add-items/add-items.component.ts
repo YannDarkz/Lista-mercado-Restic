@@ -49,7 +49,6 @@ export class AddItemsComponent {
         ...this.addItemForm.value as Iproduct,
        userId: numericUserId, 
       };
-      console.log("neww item",newItem);
       
       const newCategory = newItem.category?.toLowerCase();
 

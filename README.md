@@ -6,8 +6,7 @@
 - TypeScript
 - HTML
 - SCSS
-- Web Storage
-- Local Storage
+- Json-Server
 
 ### Funcionalidades
 - Listagem de produtos
@@ -18,6 +17,14 @@
 - Valor total dos itens comprados
 - Valor total dos itens na lista de compras
 - Exclusão de produtos Comprados, movendo os mesmos para a lista de compras.
+- Login OAuth 2.0: Apenas usuários autenticados têm acesso às rotas protegidas. O login deverá ser realizado a partir de alguma conta social.
+- Uso de Guards: restringir rotas para que apenas pessoas autorizadas tenham acesso a sua lista de compras.
+- HttpClient: Consumir e atualizar dados armazenados no JSON simulado.
+<!-- falta -->
+- Endereços não existentes: O sistema deverá tratar rotas não existentes acessadas pelo usuário.
+
+
+
 
 ### Guia de Uso
 - Após entrar no site, comece adicionando o produto na lista de itens:

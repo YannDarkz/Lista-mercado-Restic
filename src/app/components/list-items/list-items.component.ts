@@ -13,9 +13,10 @@ import { ShoppingListService } from '../../services/shopping-list/shopping-list.
 import { ItemUpdateService } from '../../services/itemUpdate/item-update.service';
 
 
-import { Subscription } from 'rxjs';
-import { forkJoin } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { UserService } from '../../services/user/user.service';
+
 
 
 @Component({
@@ -31,10 +32,13 @@ export class ListItemsComponent implements OnInit, OnDestroy {
   userId: string | undefined = undefined
   private updateSubscription!: Subscription;
 
-  constructor(private http: ShoppingListService, private itemUpdateService: ItemUpdateService, private userDataService: UserDataService) {}
+  constructor(private userService: UserService, private http: ShoppingListService, private itemUpdateService: ItemUpdateService, private userDataService: UserDataService) {}
 
 
   categories = ['cold', 'perishables', 'cleaning', 'others'];
+
+  addTextNotify = '';
+  messageError = '';
 
   categoriesWithItems: { category: string; products: Iproduct[] }[] = [
     { category: 'cold', products: [] },
@@ -59,6 +63,9 @@ export class ListItemsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.userService.error$.subscribe(errorMsg => {
+      this.messageError = errorMsg;
+    });
     
    this.updateSubscription = this.itemUpdateService.updateItems$.subscribe(() => {
     this.loadItems();
@@ -89,11 +96,20 @@ export class ListItemsComponent implements OnInit, OnDestroy {
     });
   }
 
+  
+
   loadItems(): void {    
     const loadObservables = this.categoriesWithItems.map(categoryObj => 
       this.http.getItemsByCategory(categoryObj.category, this.userId!).pipe(
         
-        tap(data => categoryObj.products = data)
+        tap(data => categoryObj.products = data),
+        catchError(error => {
+          this.showError(error.message);
+          console.log("errot", error.message);
+          
+
+          return of(null);
+        })
       )
     );
     forkJoin(loadObservables).subscribe({
@@ -229,7 +245,15 @@ export class ListItemsComponent implements OnInit, OnDestroy {
     requestAnimationFrame(animateScroll);
   }
 
-  addTextNotify = '';
+
+
+  showError(message: string): void {
+    this.messageError = message; 
+    setTimeout(() => {
+      this.messageError = ''; 
+    }, 3000);
+  }
+
   
   notifyAddItem(): void {
     this.addTextNotify = 'adcionado com sucesso! ✅'
