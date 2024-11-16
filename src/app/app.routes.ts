@@ -18,7 +18,7 @@ export const routes: Routes = [
 
     },
     {
-        path: '**', // Rota para capturar rotas inexistentes
+        path: '**',
         component: NotFoundComponent,
     }
 
